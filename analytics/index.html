@@ -123,6 +123,88 @@
     <!-- Main Container -->
     <main class="flex-grow p-6 space-y-6 max-w-7xl mx-auto w-full">
       
+      <!-- Filters Container -->
+      <div class="bg-cardbg border border-bordercolor rounded-xl p-5 shadow-lg space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-bordercolor/50 pb-3">
+          <h3 class="font-heading font-bold text-sm text-slate-300 uppercase tracking-wider"><i class="fa-solid fa-filter mr-1.5 text-primary"></i> Filter Visitor Data</h3>
+          <button onclick="resetFilters()" class="text-xs text-primary hover:text-blue-400 transition-all font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Reset Filters
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+          <!-- Date Range Select -->
+          <div>
+            <label for="filter-date-range" class="block text-xs text-slate-400 font-semibold mb-1.5">Date Range</label>
+            <select id="filter-date-range" onchange="handleDateRangeChange()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+              <option value="lifetime">Lifetime</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="week">Past Week</option>
+              <option value="month">Past Month</option>
+              <option value="3months">Last 3 Months</option>
+              <option value="6months">Last 6 Months</option>
+              <option value="12months">Last 12 Months</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+
+          <!-- Country Select -->
+          <div>
+            <label for="filter-country" class="block text-xs text-slate-400 font-semibold mb-1.5">Country</label>
+            <select id="filter-country" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all">All Countries</option>
+            </select>
+          </div>
+
+          <!-- City Select -->
+          <div>
+            <label for="filter-city" class="block text-xs text-slate-400 font-semibold mb-1.5">City</label>
+            <select id="filter-city" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all">All Cities</option>
+            </select>
+          </div>
+
+          <!-- Device Category Select -->
+          <div>
+            <label for="filter-device" class="block text-xs text-slate-400 font-semibold mb-1.5">Device</label>
+            <select id="filter-device" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all">All Devices</option>
+              <option value="Desktop">Desktop</option>
+              <option value="Mobile">Mobile</option>
+              <option value="Tablet">Tablet</option>
+            </select>
+          </div>
+
+          <!-- OS / Device Type Select -->
+          <div>
+            <label for="filter-os" class="block text-xs text-slate-400 font-semibold mb-1.5">Device Type (OS)</label>
+            <select id="filter-os" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all">All Operating Systems</option>
+              <option value="iPhone (iOS)">iPhone (iOS)</option>
+              <option value="iPad (iOS)">iPad (iOS)</option>
+              <option value="Android">Android</option>
+              <option value="Windows PC">Windows PC</option>
+              <option value="macOS (Mac)">macOS (Mac)</option>
+              <option value="Linux PC">Linux PC</option>
+              <option value="Other / Unknown">Other / Unknown</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Custom Date Fields (Hidden by default) -->
+        <div id="custom-date-container" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-bordercolor/30 pt-3 max-w-md">
+          <div>
+            <label for="filter-from-date" class="block text-xs text-slate-400 font-semibold mb-1.5">From Date</label>
+            <input type="date" id="filter-from-date" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label for="filter-to-date" class="block text-xs text-slate-400 font-semibold mb-1.5">To Date</label>
+            <input type="date" id="filter-to-date" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
+          </div>
+        </div>
+      </div>
+      
       <!-- KPI Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Card 1: Page Views -->
@@ -308,6 +390,12 @@
             // Hide login and show dashboard
             document.getElementById('login-overlay').classList.add('opacity-0', 'pointer-events-none');
             document.getElementById('dashboard-content').classList.remove('hidden');
+            
+            // Save raw data globally
+            window.rawAnalyticsData = response.data;
+            
+            // Populate dynamic dropdown options
+            populateDropdowns(response.data);
             
             // Process and render stats
             processData(response.data);
@@ -670,6 +758,173 @@
           }
         }
       });
+    }
+
+    // Dynamic dropdown options populator
+    function populateDropdowns(rows) {
+      const countries = new Set();
+      const cities = new Set();
+      
+      rows.forEach(row => {
+        if (row.country) countries.add(row.country.trim());
+        if (row.city) cities.add(row.city.trim());
+      });
+      
+      const countrySelect = document.getElementById('filter-country');
+      const citySelect = document.getElementById('filter-city');
+      
+      const selectedCountry = countrySelect.value;
+      const selectedCity = citySelect.value;
+      
+      countrySelect.innerHTML = '<option value="all">All Countries</option>';
+      citySelect.innerHTML = '<option value="all">All Cities</option>';
+      
+      Array.from(countries).sort().forEach(country => {
+        if (country && country !== "Unknown") {
+          countrySelect.innerHTML += `<option value="${escapeHtml(country)}">${escapeHtml(country)}</option>`;
+        }
+      });
+      
+      Array.from(cities).sort().forEach(city => {
+        if (city && city !== "Unknown") {
+          citySelect.innerHTML += `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`;
+        }
+      });
+      
+      countrySelect.value = selectedCountry || 'all';
+      citySelect.value = selectedCity || 'all';
+    }
+
+    function handleDateRangeChange() {
+      const range = document.getElementById('filter-date-range').value;
+      const customDateContainer = document.getElementById('custom-date-container');
+      
+      if (range === 'custom') {
+        customDateContainer.classList.remove('hidden');
+      } else {
+        customDateContainer.classList.add('hidden');
+      }
+      
+      applyFilters();
+    }
+
+    function applyFilters() {
+      if (!window.rawAnalyticsData) return;
+      
+      const range = document.getElementById('filter-date-range').value;
+      const country = document.getElementById('filter-country').value;
+      const city = document.getElementById('filter-city').value;
+      const device = document.getElementById('filter-device').value;
+      const os = document.getElementById('filter-os').value;
+      
+      let filtered = [...window.rawAnalyticsData];
+      
+      // 1. Date Filtering
+      if (range !== 'lifetime') {
+        let fromDate = null;
+        let toDate = new Date();
+        
+        if (range === 'today') {
+          fromDate = new Date();
+          fromDate.setHours(0, 0, 0, 0);
+        } else if (range === 'yesterday') {
+          fromDate = new Date();
+          fromDate.setDate(fromDate.getDate() - 1);
+          fromDate.setHours(0, 0, 0, 0);
+          
+          toDate = new Date();
+          toDate.setDate(toDate.getDate() - 1);
+          toDate.setHours(23, 59, 59, 999);
+        } else if (range === 'week') {
+          fromDate = new Date();
+          fromDate.setDate(fromDate.getDate() - 7);
+        } else if (range === 'month') {
+          fromDate = new Date();
+          fromDate.setDate(fromDate.getDate() - 30);
+        } else if (range === '3months') {
+          fromDate = new Date();
+          fromDate.setMonth(fromDate.getMonth() - 3);
+        } else if (range === '6months') {
+          fromDate = new Date();
+          fromDate.setMonth(fromDate.getMonth() - 6);
+        } else if (range === '12months') {
+          fromDate = new Date();
+          fromDate.setMonth(fromDate.getMonth() - 12);
+        } else if (range === 'custom') {
+          const fromInput = document.getElementById('filter-from-date').value;
+          const toInput = document.getElementById('filter-to-date').value;
+          
+          if (fromInput) {
+            fromDate = new Date(fromInput);
+            fromDate.setHours(0, 0, 0, 0);
+          }
+          if (toInput) {
+            toDate = new Date(toInput);
+            toDate.setHours(23, 59, 59, 999);
+          }
+        }
+        
+        filtered = filtered.filter(row => {
+          if (!row.timestamp) return false;
+          const rowDate = new Date(row.timestamp);
+          if (isNaN(rowDate.getTime())) return false;
+          
+          let matches = true;
+          if (fromDate) matches = matches && (rowDate >= fromDate);
+          if (toDate) matches = matches && (rowDate <= toDate);
+          return matches;
+        });
+      }
+      
+      // 2. Country Filtering
+      if (country !== 'all') {
+        filtered = filtered.filter(row => row.country && row.country.trim() === country);
+      }
+      
+      // 3. City Filtering
+      if (city !== 'all') {
+        filtered = filtered.filter(row => row.city && row.city.trim() === city);
+      }
+      
+      // 4. Device Category Filtering
+      if (device !== 'all') {
+        filtered = filtered.filter(row => {
+          let rowDevice = row.device || 'Desktop';
+          const uaLower = (row.useragent || '').toLowerCase();
+          if (rowDevice === "Desktop" && uaLower.includes("samsungbrowser")) {
+            rowDevice = "Tablet";
+          }
+          return rowDevice === device;
+        });
+      }
+      
+      // 5. OS Filtering
+      if (os !== 'all') {
+        filtered = filtered.filter(row => {
+          let rowDevice = row.device || 'Desktop';
+          const uaLower = (row.useragent || '').toLowerCase();
+          if (rowDevice === "Desktop" && uaLower.includes("samsungbrowser")) {
+            rowDevice = "Tablet";
+          }
+          return getOSFromUserAgent(row.useragent || '', rowDevice) === os;
+        });
+      }
+      
+      // Process the filtered data
+      processData(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-date-range').value = 'lifetime';
+      document.getElementById('filter-country').value = 'all';
+      document.getElementById('filter-city').value = 'all';
+      document.getElementById('filter-device').value = 'all';
+      document.getElementById('filter-os').value = 'all';
+      document.getElementById('filter-from-date').value = '';
+      document.getElementById('filter-to-date').value = '';
+      document.getElementById('custom-date-container').classList.add('hidden');
+      
+      applyFilters();
     }
   </script>
 </body>
