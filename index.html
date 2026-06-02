@@ -314,11 +314,19 @@
             Learn More
           </a>
         </div>
+
+        <!-- Scroll Down Indicator for Mobile -->
+        <div class="flex md:hidden flex-col items-center gap-1.5 text-white/70 mt-10 animate-bounce">
+          <span class="text-xs uppercase tracking-widest font-semibold">Scroll Down</span>
+          <a href="#about" class="text-lg hover:text-accent transition-colors" aria-label="Scroll to About Section">
+            <i class="fa-solid fa-chevron-down"></i>
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- Scroll Down Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/70 animate-bounce">
+    <!-- Scroll Down Indicator for Desktop -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-white/70 animate-bounce">
       <span class="text-xs uppercase tracking-widest font-semibold">Scroll Down</span>
       <a href="#about" class="text-lg hover:text-accent transition-colors" aria-label="Scroll to About Section">
         <i class="fa-solid fa-chevron-down"></i>
