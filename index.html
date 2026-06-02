@@ -1775,7 +1775,9 @@
 
       function getDeviceType() {
         const ua = navigator.userAgent;
-        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+        const isMacTablet = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
+                            (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
+        if (isMacTablet || /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
           return "Tablet";
         }
         if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {

@@ -211,11 +211,11 @@
           </div>
         </div>
 
-        <!-- Top Locations -->
+        <!-- Top Operating Systems -->
         <div class="bg-cardbg border border-bordercolor rounded-xl p-6 shadow-lg">
-          <h3 class="font-heading font-bold text-base text-white mb-4">Top Visited Pages</h3>
+          <h3 class="font-heading font-bold text-base text-white mb-4">Operating Systems</h3>
           <div class="h-[220px] w-full relative">
-            <canvas id="pagesChart"></canvas>
+            <canvas id="osChart"></canvas>
           </div>
         </div>
       </div>
@@ -231,10 +231,10 @@
             <thead class="bg-slate-900/60 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-bordercolor">
               <tr>
                 <th class="px-6 py-3.5">Time & Date</th>
-                <th class="px-6 py-3.5">Page Path</th>
                 <th class="px-6 py-3.5">Referrer</th>
                 <th class="px-6 py-3.5">Country / City</th>
                 <th class="px-6 py-3.5">Device</th>
+                <th class="px-6 py-3.5">Device Type (OS)</th>
               </tr>
             </thead>
             <tbody id="activity-table-body" class="divide-y divide-bordercolor/50">
@@ -333,7 +333,7 @@
 
       // Estimate Unique Visitors (combining location + referrer + device + day as a rough fingerprint)
       const uniqueFingerprints = new Set(rows.map(row => {
-        const dateStr = row.timestamp ? row.timestamp.substring(0, 10) : '';
+        const dateStr = row.timestamp ? String(row.timestamp).substring(0, 10) : '';
         return `${dateStr}_${row.country}_${row.city}_${row.device}`;
       }));
       document.getElementById('stat-visitors').textContent = uniqueFingerprints.size.toLocaleString();
@@ -343,7 +343,7 @@
       const cities = {};
       const referrers = {};
       const devices = {};
-      const paths = {};
+      const osTypes = {};
       const dates = {};
 
       rows.forEach(row => {
@@ -352,7 +352,7 @@
         const city = row.city || 'Unknown';
         const referrer = cleanReferrer(row.referrer || 'Direct');
         const device = row.device || 'Desktop';
-        const path = row.path || '/';
+        const os = getOSFromUserAgent(row.useragent || '', device);
         
         // Parse date for timeline chart
         let dateStr = 'Unknown';
@@ -367,7 +367,7 @@
         cities[city] = (cities[city] || 0) + 1;
         referrers[referrer] = (referrers[referrer] || 0) + 1;
         devices[device] = (devices[device] || 0) + 1;
-        paths[path] = (paths[path] || 0) + 1;
+        osTypes[os] = (osTypes[os] || 0) + 1;
         if (dateStr !== 'Unknown') {
           dates[dateStr] = (dates[dateStr] || 0) + 1;
         }
@@ -390,18 +390,29 @@
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-800/40 transition-colors';
         
-        const dateFormatted = row.timestamp ? new Date(row.timestamp).toLocaleString(undefined, {
-          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        }) : 'Unknown';
+        let dateFormatted = 'Unknown';
+        if (row.timestamp) {
+          const d = new Date(row.timestamp);
+          if (!isNaN(d.getTime())) {
+            dateFormatted = d.toLocaleString(undefined, {
+              month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+          } else {
+            // Fallback for raw Google sheets string representations
+            dateFormatted = String(row.timestamp).split('.')[0].replace('T', ' ');
+          }
+        }
         
         const deviceIcon = getDeviceIcon(row.device);
+        const osType = getOSFromUserAgent(row.useragent || '', row.device);
+        const osIcon = getOSIcon(osType);
         
         tr.innerHTML = `
           <td class="px-6 py-4 font-medium text-slate-300 whitespace-nowrap">${dateFormatted}</td>
-          <td class="px-6 py-4 font-mono text-xs text-primary">${escapeHtml(row.path || '/')}</td>
           <td class="px-6 py-4 text-xs"><span class="bg-slate-800 px-2 py-1 rounded text-slate-400">${escapeHtml(cleanReferrer(row.referrer || 'Direct'))}</span></td>
           <td class="px-6 py-4 text-xs font-semibold">${escapeHtml(row.country || 'Unknown')}, <span class="text-slate-400 font-normal">${escapeHtml(row.city || 'Unknown')}</span></td>
           <td class="px-6 py-4 text-xs text-slate-400"><i class="${deviceIcon} mr-1.5"></i> ${escapeHtml(row.device || 'Desktop')}</td>
+          <td class="px-6 py-4 text-xs text-slate-300"><i class="${osIcon} mr-1.5"></i> ${escapeHtml(osType)}</td>
         `;
         tableBody.appendChild(tr);
       });
@@ -410,7 +421,7 @@
       renderTrafficChart(dates);
       renderDeviceChart(devices);
       renderReferrerChart(referrers);
-      renderPagesChart(paths);
+      renderOSChart(osTypes);
     }
 
     // Helper functions
@@ -445,6 +456,34 @@
         case 'mobile': return 'fa-solid fa-mobile-screen-button';
         case 'tablet': return 'fa-solid fa-tablet-screen-button';
         default: return 'fa-solid fa-desktop';
+      }
+    }
+
+    function getOSFromUserAgent(ua, device) {
+      if (!ua) return "Unknown";
+      const uaLower = ua.toLowerCase();
+      if (uaLower.includes("iphone")) return "iPhone (iOS)";
+      if (uaLower.includes("ipad") || (device === "Tablet" && (uaLower.includes("macintosh") || uaLower.includes("mac os x")))) {
+        return "iPad (iOS)";
+      }
+      if (uaLower.includes("android")) return "Android";
+      if (uaLower.includes("windows")) return "Windows PC";
+      if (uaLower.includes("macintosh") || uaLower.includes("mac os x")) {
+        return "macOS (Mac)";
+      }
+      if (uaLower.includes("linux")) return "Linux PC";
+      return "Other / Unknown";
+    }
+
+    function getOSIcon(os) {
+      switch (os) {
+        case "iPhone (iOS)": return "fa-brands fa-apple text-slate-400";
+        case "iPad (iOS)": return "fa-brands fa-apple text-slate-400";
+        case "macOS (Mac)": return "fa-brands fa-apple text-slate-400";
+        case "Windows PC": return "fa-brands fa-windows text-blue-400";
+        case "Android": return "fa-brands fa-android text-emerald-400";
+        case "Linux PC": return "fa-brands fa-linux text-amber-500";
+        default: return "fa-solid fa-laptop-code text-slate-500";
       }
     }
 
@@ -579,19 +618,19 @@
       });
     }
 
-    // Top pages chart
-    function renderPagesChart(pagesObj) {
-      const sorted = Object.entries(pagesObj)
+    // Top Operating Systems chart
+    function renderOSChart(osObj) {
+      const sorted = Object.entries(osObj)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5);
 
       const labels = sorted.map(item => item[0]);
       const data = sorted.map(item => item[1]);
 
-      const ctx = document.getElementById('pagesChart').getContext('2d');
-      if (chartInstances.pages) chartInstances.pages.destroy();
+      const ctx = document.getElementById('osChart').getContext('2d');
+      if (chartInstances.os) chartInstances.os.destroy();
 
-      chartInstances.pages = new Chart(ctx, {
+      chartInstances.os = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
