@@ -175,6 +175,13 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    /* Hide absolute desktop scroll indicator on short screens and mobile viewports */
+    @media (max-height: 760px), (max-width: 767px) {
+      .desktop-scroll-indicator {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body class="font-sans text-bodytext bg-white overflow-x-hidden">
@@ -281,7 +288,7 @@
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
     <!-- Content -->
-    <div class="relative z-10 max-w-7xl mx-auto px-4 md:px-8 w-full text-center lg:text-left flex flex-col justify-center h-full text-white">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 md:px-8 w-full text-center lg:text-left flex flex-col justify-center text-white py-12 md:py-20">
       <div class="max-w-3xl">
         <!-- Subtitle/Badge -->
         <span class="inline-flex items-center gap-2 bg-accent/90 border border-accent text-white text-xs uppercase font-extrabold tracking-widest px-3 py-1.5 rounded-full mb-6 shadow-lg animate-bounce select-none">
@@ -316,7 +323,7 @@
         </div>
 
         <!-- Scroll Down Indicator for Mobile -->
-        <div class="flex md:hidden flex-col items-center gap-1.5 text-white/70 mt-10 animate-bounce">
+        <div class="flex md:hidden flex-col items-center gap-1.5 text-white/70 mt-12 animate-bounce">
           <span class="text-xs uppercase tracking-widest font-semibold">Scroll Down</span>
           <a href="#about" class="text-lg hover:text-accent transition-colors" aria-label="Scroll to About Section">
             <i class="fa-solid fa-chevron-down"></i>
@@ -325,8 +332,8 @@
       </div>
     </div>
 
-    <!-- Scroll Down Indicator for Desktop -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-white/70 animate-bounce">
+    <!-- Scroll Down Indicator for Desktop (hidden on mobile and short screens to prevent overlaps) -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-white/70 animate-bounce desktop-scroll-indicator">
       <span class="text-xs uppercase tracking-widest font-semibold">Scroll Down</span>
       <a href="#about" class="text-lg hover:text-accent transition-colors" aria-label="Scroll to About Section">
         <i class="fa-solid fa-chevron-down"></i>
