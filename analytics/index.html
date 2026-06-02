@@ -475,12 +475,12 @@
     function getOSFromUserAgent(ua, device) {
       if (!ua) return "Unknown";
       const uaLower = ua.toLowerCase();
+      if (uaLower.includes("windows")) return "Windows PC";
       if (uaLower.includes("iphone")) return "iPhone (iOS)";
       if (uaLower.includes("ipad") || (device === "Tablet" && (uaLower.includes("macintosh") || uaLower.includes("mac os x")))) {
         return "iPad (iOS)";
       }
       if (uaLower.includes("android") || uaLower.includes("samsungbrowser")) return "Android";
-      if (uaLower.includes("windows")) return "Windows PC";
       if (uaLower.includes("macintosh") || uaLower.includes("mac os x")) {
         return "macOS (Mac)";
       }
