@@ -1804,15 +1804,41 @@
         }).catch(err => console.error("Analytics error:", err));
       }
 
-      // Fetch Geolocation then log
-      fetch("https://ipapi.co/json/")
-        .then(res => res.json())
-        .then(data => {
-          logVisit(data.country_name, data.city);
-        })
-        .catch(() => {
-          logVisit("Unknown", "Unknown");
-        });
+      // Fetch Geolocation with multi-service fallbacks
+      function fetchLocation() {
+        return fetch("https://freeipapi.com/api/json")
+          .then(res => res.json())
+          .then(data => ({
+            country: data.countryName || "Unknown",
+            city: data.cityName || "Unknown"
+          }))
+          .catch(() => {
+            // Fallback 1: ipapi.co
+            return fetch("https://ipapi.co/json/")
+              .then(res => res.json())
+              .then(data => ({
+                country: data.country_name || "Unknown",
+                city: data.city || "Unknown"
+              }))
+              .catch(() => {
+                // Fallback 2: db-ip
+                return fetch("https://api.db-ip.com/v2/free/self")
+                  .then(res => res.json())
+                  .then(data => ({
+                    country: data.countryName || "Unknown",
+                    city: data.city || "Unknown"
+                  }))
+                  .catch(() => ({
+                    country: "Unknown",
+                    city: "Unknown"
+                  }));
+              });
+          });
+      }
+
+      fetchLocation().then(loc => {
+        logVisit(loc.country, loc.city);
+      });
     })();
   </script>
 </body>
