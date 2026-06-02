@@ -1760,6 +1760,60 @@
         bgImg.style.transform = 'translateY(' + (offset * 0.4) + 'px)';
       }
     });
+
+    // VISITOR ANALYTICS TRACKING SYSTEM
+    (function() {
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXh2cYs1-JhhO2zgMx1I80pPpKSWXHf7nHtO8SGY2WMFIt2Hhp4WcLGY6B_OCHxKNI/exec";
+      
+      if (SCRIPT_URL === "YOUR_GOOGLE_SCRIPT_URL") return;
+
+      // Do not log local development views
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+        console.log("Analytics: Local views are not logged.");
+        return;
+      }
+
+      function getDeviceType() {
+        const ua = navigator.userAgent;
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+          return "Tablet";
+        }
+        if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+          return "Mobile";
+        }
+        return "Desktop";
+      }
+
+      function logVisit(country, city) {
+        const payload = {
+          path: window.location.pathname,
+          referrer: document.referrer || "Direct",
+          device: getDeviceType(),
+          country: country || "Unknown",
+          city: city || "Unknown",
+          userAgent: navigator.userAgent
+        };
+
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }).catch(err => console.error("Analytics error:", err));
+      }
+
+      // Fetch Geolocation then log
+      fetch("https://ipapi.co/json/")
+        .then(res => res.json())
+        .then(data => {
+          logVisit(data.country_name, data.city);
+        })
+        .catch(() => {
+          logVisit("Unknown", "Unknown");
+        });
+    })();
   </script>
 </body>
 
