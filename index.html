@@ -1041,7 +1041,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label for="form-phone" class="block text-xs font-bold text-gray-700 uppercase mb-1">Phone Number</label>
-                <input type="tel" id="form-phone" name="phone" required class="w-full px-4 py-2.5 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm" placeholder="Enter Contact Number">
+                <input type="tel" id="form-phone" name="phone" required oninput="this.setCustomValidity('')" class="w-full px-4 py-2.5 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm" placeholder="Enter Contact Number">
               </div>
               <div>
                 <label for="form-email" class="block text-xs font-bold text-gray-700 uppercase mb-1">Email Address</label>
@@ -1412,9 +1412,11 @@
       const phoneInput = document.getElementById('form-phone');
       const cleanPhone = phoneInput.value.replace(/\D/g, '');
       if (cleanPhone.length < 10) {
-        alert("Please enter a valid phone number with at least 10 digits.");
-        phoneInput.focus();
+        phoneInput.setCustomValidity("Please enter a valid phone number with at least 10 digits.");
+        phoneInput.reportValidity();
         return;
+      } else {
+        phoneInput.setCustomValidity("");
       }
       
       // Show loading state
