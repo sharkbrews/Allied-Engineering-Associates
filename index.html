@@ -1243,7 +1243,8 @@
                   class="fa-solid fa-circle-check text-sm text-yellow-300 opacity-80 group-hover:scale-110 transition-transform"></i>
               </h3>
               <p class="text-blue-100 text-xs md:text-sm leading-relaxed">
-                Click 'Submit Request' to send your specifications. Our engineering team will review your requirements and contact you within 24 hours.
+                Click 'Submit Request' to send your specifications. Our engineering team will review your requirements
+                and contact you within 24 hours.
               </p>
             </div>
           </div>
@@ -1762,9 +1763,9 @@
     });
 
     // VISITOR ANALYTICS TRACKING SYSTEM
-    (function() {
+    (function () {
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXh2cYs1-JhhO2zgMx1I80pPpKSWXHf7nHtO8SGY2WMFIt2Hhp4WcLGY6B_OCHxKNI/exec";
-      
+
       if (SCRIPT_URL === "YOUR_GOOGLE_SCRIPT_URL") return;
 
       // Do not log local development views
@@ -1775,8 +1776,8 @@
 
       function getDeviceType() {
         const ua = navigator.userAgent;
-        const isMacTablet = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
-                            (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
+        const isMacTablet = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+          (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
         if (isMacTablet || /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
           return "Tablet";
         }

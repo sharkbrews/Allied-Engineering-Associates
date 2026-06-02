@@ -351,7 +351,14 @@
         const country = row.country || 'Unknown';
         const city = row.city || 'Unknown';
         const referrer = cleanReferrer(row.referrer || 'Direct');
-        const device = row.device || 'Desktop';
+        let device = row.device || 'Desktop';
+        const uaLower = (row.useragent || '').toLowerCase();
+        
+        // Correct Samsung Browser on Tablet faking as Desktop Linux
+        if (device === "Desktop" && uaLower.includes("samsungbrowser")) {
+          device = "Tablet";
+        }
+        
         const os = getOSFromUserAgent(row.useragent || '', device);
         
         // Parse date for timeline chart
@@ -403,15 +410,21 @@
           }
         }
         
-        const deviceIcon = getDeviceIcon(row.device);
-        const osType = getOSFromUserAgent(row.useragent || '', row.device);
+        const uaLower = (row.useragent || '').toLowerCase();
+        let device = row.device || 'Desktop';
+        if (device === "Desktop" && uaLower.includes("samsungbrowser")) {
+          device = "Tablet";
+        }
+        
+        const deviceIcon = getDeviceIcon(device);
+        const osType = getOSFromUserAgent(row.useragent || '', device);
         const osIcon = getOSIcon(osType);
         
         tr.innerHTML = `
           <td class="px-6 py-4 font-medium text-slate-300 whitespace-nowrap">${dateFormatted}</td>
           <td class="px-6 py-4 text-xs"><span class="bg-slate-800 px-2 py-1 rounded text-slate-400">${escapeHtml(cleanReferrer(row.referrer || 'Direct'))}</span></td>
           <td class="px-6 py-4 text-xs font-semibold">${escapeHtml(row.country || 'Unknown')}, <span class="text-slate-400 font-normal">${escapeHtml(row.city || 'Unknown')}</span></td>
-          <td class="px-6 py-4 text-xs text-slate-400"><i class="${deviceIcon} mr-1.5"></i> ${escapeHtml(row.device || 'Desktop')}</td>
+          <td class="px-6 py-4 text-xs text-slate-400"><i class="${deviceIcon} mr-1.5"></i> ${escapeHtml(device || 'Desktop')}</td>
           <td class="px-6 py-4 text-xs text-slate-300"><i class="${osIcon} mr-1.5"></i> ${escapeHtml(osType)}</td>
         `;
         tableBody.appendChild(tr);
@@ -466,7 +479,7 @@
       if (uaLower.includes("ipad") || (device === "Tablet" && (uaLower.includes("macintosh") || uaLower.includes("mac os x")))) {
         return "iPad (iOS)";
       }
-      if (uaLower.includes("android")) return "Android";
+      if (uaLower.includes("android") || uaLower.includes("samsungbrowser")) return "Android";
       if (uaLower.includes("windows")) return "Windows PC";
       if (uaLower.includes("macintosh") || uaLower.includes("mac os x")) {
         return "macOS (Mac)";
