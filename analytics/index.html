@@ -105,7 +105,7 @@
     <!-- Top Header -->
     <header class="border-b border-bordercolor bg-cardbg/50 backdrop-blur px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-3">
-        <img src="images/logo.svg" alt="Allied Engineering Logo" class="h-8 w-auto filter brightness-0 invert">
+        <img src="../images/logo.svg" alt="Allied Engineering Logo" class="h-8 w-auto filter brightness-0 invert">
         <div class="h-6 w-[1px] bg-slate-700 hidden sm:block"></div>
         <h2 class="font-heading font-bold text-lg text-white hidden sm:block">Analytics Portal</h2>
       </div>
@@ -253,7 +253,7 @@
   </div>
 
   <script>
-    // Placeholder - We will inject the spreadsheet Web App URL here
+    // Google Apps Script Web App URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXh2cYs1-JhhO2zgMx1I80pPpKSWXHf7nHtO8SGY2WMFIt2Hhp4WcLGY6B_OCHxKNI/exec";
 
     let chartInstances = {};
@@ -427,6 +427,7 @@
       }
     }
 
+    // Find top key helper
     function getTopKey(obj) {
       let maxVal = -1;
       let topKey = '';
@@ -453,7 +454,6 @@
 
     // Chart Render Functions
     function renderTrafficChart(datesObj) {
-      // Sort dates by chronological order
       const labels = Object.keys(datesObj).slice(-30);
       const data = labels.map(label => datesObj[label]);
 
@@ -525,7 +525,6 @@
         }
       });
 
-      // Update Custom HTML Legend
       const legendEl = document.getElementById('device-legend');
       legendEl.innerHTML = '';
       labels.forEach((label, index) => {
@@ -540,7 +539,6 @@
     }
 
     function renderReferrerChart(referrersObj) {
-      // Sort referrers by count
       const sorted = Object.entries(referrersObj)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5);
@@ -558,7 +556,7 @@
           datasets: [{
             label: 'Referrals',
             data: data,
-            backgroundColor: 'rgba(139, 92, 246, 0.75)', // Purple 500
+            backgroundColor: 'rgba(139, 92, 246, 0.75)',
             borderRadius: 6
           }]
         },
@@ -581,8 +579,8 @@
       });
     }
 
+    // Top pages chart
     function renderPagesChart(pagesObj) {
-      // Sort pages by count
       const sorted = Object.entries(pagesObj)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5);
@@ -600,7 +598,7 @@
           datasets: [{
             label: 'Views',
             data: data,
-            backgroundColor: 'rgba(16, 185, 129, 0.75)', // Emerald 500
+            backgroundColor: 'rgba(16, 185, 129, 0.75)',
             borderRadius: 6
           }]
         },
