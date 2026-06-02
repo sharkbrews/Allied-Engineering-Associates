@@ -65,6 +65,12 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #3B82F6;
     }
+
+    /* Hide default datalist arrow in Webkit browsers (Chrome, Safari, Edge) */
+    input::-webkit-calendar-picker-indicator {
+      display: none !important;
+      -webkit-appearance: none;
+    }
   </style>
 </head>
 
@@ -136,59 +142,82 @@
           <!-- Date Range Select -->
           <div>
             <label for="filter-date-range" class="block text-xs text-slate-400 font-semibold mb-1.5">Date Range</label>
-            <select id="filter-date-range" onchange="handleDateRangeChange()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
-              <option value="lifetime">Lifetime</option>
-              <option value="today">Today</option>
-              <option value="yesterday">Yesterday</option>
-              <option value="week">Past Week</option>
-              <option value="month">Past Month</option>
-              <option value="3months">Last 3 Months</option>
-              <option value="6months">Last 6 Months</option>
-              <option value="12months">Last 12 Months</option>
-              <option value="custom">Custom Range</option>
-            </select>
+            <div class="relative">
+              <select id="filter-date-range" onchange="handleDateRangeChange()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 pr-10 text-sm text-white focus:outline-none focus:border-primary appearance-none">
+                <option value="lifetime">Lifetime</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">Past Week</option>
+                <option value="month">Past Month</option>
+                <option value="3months">Last 3 Months</option>
+                <option value="6months">Last 6 Months</option>
+                <option value="12months">Last 12 Months</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
           </div>
 
           <!-- Country Select -->
           <div>
             <label for="filter-country" class="block text-xs text-slate-400 font-semibold mb-1.5">Country</label>
-            <select id="filter-country" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all">All Countries</option>
-            </select>
+            <div class="relative">
+              <input list="countries-list" id="filter-country" oninput="applyFilters()" onchange="applyFilters()" onclick="if(typeof this.showPicker === 'function') this.showPicker()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 pr-10 text-sm text-white focus:outline-none focus:border-primary placeholder:text-slate-600" placeholder="All Countries">
+              <datalist id="countries-list"></datalist>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
           </div>
 
           <!-- City Select -->
           <div>
             <label for="filter-city" class="block text-xs text-slate-400 font-semibold mb-1.5">City</label>
-            <select id="filter-city" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all">All Cities</option>
-            </select>
+            <div class="relative">
+              <input list="cities-list" id="filter-city" oninput="applyFilters()" onchange="applyFilters()" onclick="if(typeof this.showPicker === 'function') this.showPicker()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 pr-10 text-sm text-white focus:outline-none focus:border-primary placeholder:text-slate-600" placeholder="All Cities">
+              <datalist id="cities-list"></datalist>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
           </div>
 
           <!-- Device Category Select -->
           <div>
             <label for="filter-device" class="block text-xs text-slate-400 font-semibold mb-1.5">Device</label>
-            <select id="filter-device" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all">All Devices</option>
-              <option value="Desktop">Desktop</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Tablet">Tablet</option>
-            </select>
+            <div class="relative">
+              <select id="filter-device" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 pr-10 text-sm text-white focus:outline-none focus:border-primary appearance-none">
+                <option value="all">All Devices</option>
+                <option value="Desktop">Desktop</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Tablet">Tablet</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
           </div>
 
           <!-- OS / Device Type Select -->
           <div>
             <label for="filter-os" class="block text-xs text-slate-400 font-semibold mb-1.5">Device Type (OS)</label>
-            <select id="filter-os" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all">All Operating Systems</option>
-              <option value="iPhone (iOS)">iPhone (iOS)</option>
-              <option value="iPad (iOS)">iPad (iOS)</option>
-              <option value="Android">Android</option>
-              <option value="Windows PC">Windows PC</option>
-              <option value="macOS (Mac)">macOS (Mac)</option>
-              <option value="Linux PC">Linux PC</option>
-              <option value="Other / Unknown">Other / Unknown</option>
-            </select>
+            <div class="relative">
+              <select id="filter-os" onchange="applyFilters()" class="w-full bg-slate-900 border border-bordercolor rounded-lg px-3 py-2 pr-10 text-sm text-white focus:outline-none focus:border-primary appearance-none">
+                <option value="all">All Operating Systems</option>
+                <option value="iPhone (iOS)">iPhone (iOS)</option>
+                <option value="iPad (iOS)">iPad (iOS)</option>
+                <option value="Android">Android</option>
+                <option value="Windows PC">Windows PC</option>
+                <option value="macOS (Mac)">macOS (Mac)</option>
+                <option value="Linux PC">Linux PC</option>
+                <option value="Other / Unknown">Other / Unknown</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -261,8 +290,8 @@
         <!-- Traffic Over Time (2/3 width) -->
         <div class="lg:col-span-2 bg-cardbg border border-bordercolor rounded-xl p-6 shadow-lg flex flex-col justify-between">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-heading font-bold text-base text-white">Daily Traffic Overview</h3>
-            <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Last 30 Days</span>
+            <h3 class="font-heading font-bold text-base text-white">Traffic Overview</h3>
+            <span id="traffic-period-text" class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Lifetime Data</span>
           </div>
           <div class="h-[280px] w-full relative">
             <canvas id="trafficChart"></canvas>
@@ -305,8 +334,8 @@
       <!-- Recent Visits Table -->
       <div class="bg-cardbg border border-bordercolor rounded-xl shadow-lg overflow-hidden">
         <div class="px-6 py-4 border-b border-bordercolor flex justify-between items-center">
-          <h3 class="font-heading font-bold text-base text-white">Recent Activity Logs</h3>
-          <span class="text-xs text-slate-400">Showing last 50 entries</span>
+          <h3 class="font-heading font-bold text-base text-white">Activity Logs</h3>
+          <span class="text-xs text-slate-400">Showing entries</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-300">
@@ -397,8 +426,8 @@
             // Populate dynamic dropdown options
             populateDropdowns(response.data);
             
-            // Process and render stats
-            processData(response.data);
+            // Apply initial filters & render
+            applyFilters();
           } else {
             document.getElementById('login-error').classList.remove('hidden');
             sessionStorage.removeItem('analytics_secret');
@@ -760,7 +789,7 @@
       });
     }
 
-    // Dynamic dropdown options populator
+    // Dynamic datalist options populator (allows search & autocomplete)
     function populateDropdowns(rows) {
       const countries = new Set();
       const cities = new Set();
@@ -770,29 +799,23 @@
         if (row.city) cities.add(row.city.trim());
       });
       
-      const countrySelect = document.getElementById('filter-country');
-      const citySelect = document.getElementById('filter-city');
+      const countryDatalist = document.getElementById('countries-list');
+      const cityDatalist = document.getElementById('cities-list');
       
-      const selectedCountry = countrySelect.value;
-      const selectedCity = citySelect.value;
-      
-      countrySelect.innerHTML = '<option value="all">All Countries</option>';
-      citySelect.innerHTML = '<option value="all">All Cities</option>';
+      countryDatalist.innerHTML = '<option value="All Countries">';
+      cityDatalist.innerHTML = '<option value="All Cities">';
       
       Array.from(countries).sort().forEach(country => {
         if (country && country !== "Unknown") {
-          countrySelect.innerHTML += `<option value="${escapeHtml(country)}">${escapeHtml(country)}</option>`;
+          countryDatalist.innerHTML += `<option value="${escapeHtml(country)}">`;
         }
       });
       
       Array.from(cities).sort().forEach(city => {
         if (city && city !== "Unknown") {
-          citySelect.innerHTML += `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`;
+          cityDatalist.innerHTML += `<option value="${escapeHtml(city)}">`;
         }
       });
-      
-      countrySelect.value = selectedCountry || 'all';
-      citySelect.value = selectedCity || 'all';
     }
 
     function handleDateRangeChange() {
@@ -812,8 +835,8 @@
       if (!window.rawAnalyticsData) return;
       
       const range = document.getElementById('filter-date-range').value;
-      const country = document.getElementById('filter-country').value;
-      const city = document.getElementById('filter-city').value;
+      const country = document.getElementById('filter-country').value.trim();
+      const city = document.getElementById('filter-city').value.trim();
       const device = document.getElementById('filter-device').value;
       const os = document.getElementById('filter-os').value;
       
@@ -877,13 +900,13 @@
       }
       
       // 2. Country Filtering
-      if (country !== 'all') {
-        filtered = filtered.filter(row => row.country && row.country.trim() === country);
+      if (country && country.toLowerCase() !== 'all' && country.toLowerCase() !== 'all countries') {
+        filtered = filtered.filter(row => row.country && row.country.trim().toLowerCase() === country.toLowerCase());
       }
       
       // 3. City Filtering
-      if (city !== 'all') {
-        filtered = filtered.filter(row => row.city && row.city.trim() === city);
+      if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
+        filtered = filtered.filter(row => row.city && row.city.trim().toLowerCase() === city.toLowerCase());
       }
       
       // 4. Device Category Filtering
@@ -910,14 +933,40 @@
         });
       }
       
+      // Update Traffic Overview calendar text dynamically
+      const rangeTextMap = {
+        'lifetime': 'Lifetime Data',
+        'today': 'Today',
+        'yesterday': 'Yesterday',
+        'week': 'Last 7 Days',
+        'month': 'Last 30 Days',
+        '3months': 'Last 3 Months',
+        '6months': 'Last 6 Months',
+        '12months': 'Last 12 Months',
+        'custom': 'Custom Range'
+      };
+      
+      let periodText = rangeTextMap[range] || 'Traffic Overview';
+      if (range === 'custom') {
+        const fromVal = document.getElementById('filter-from-date').value;
+        const toVal = document.getElementById('filter-to-date').value;
+        if (fromVal || toVal) {
+          periodText = `${fromVal || '...'} to ${toVal || '...'}`;
+        }
+      }
+      const periodTextEl = document.getElementById('traffic-period-text');
+      if (periodTextEl) {
+        periodTextEl.innerHTML = `<i class="fa-regular fa-calendar mr-1"></i> ${periodText}`;
+      }
+      
       // Process the filtered data
       processData(filtered);
     }
 
     function resetFilters() {
       document.getElementById('filter-date-range').value = 'lifetime';
-      document.getElementById('filter-country').value = 'all';
-      document.getElementById('filter-city').value = 'all';
+      document.getElementById('filter-country').value = '';
+      document.getElementById('filter-city').value = '';
       document.getElementById('filter-device').value = 'all';
       document.getElementById('filter-os').value = 'all';
       document.getElementById('filter-from-date').value = '';
