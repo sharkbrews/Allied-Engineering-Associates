@@ -1695,11 +1695,11 @@
         phoneInput.setCustomValidity("");
       }
 
-      // Dynamic subject formulation: "New Inquiry from [Name of the Sender]"
+      // Dynamic subject formulation: "New Inquiry on Your Website from [Name of the Sender]"
       const nameInput = document.getElementById('form-name');
       const subjectInput = form.querySelector('input[name="subject"]');
       if (subjectInput && nameInput) {
-        subjectInput.value = `New Inquiry from ${nameInput.value}`;
+        subjectInput.value = `New Inquiry on Your Website from ${nameInput.value}`;
       }
 
       // Show loading state
@@ -1719,8 +1719,13 @@
         body: json
       })
         .then(async (response) => {
-          let jsonResponse = await response.json();
-          if (response.status == 200) {
+          let jsonResponse;
+          try {
+            jsonResponse = await response.json();
+          } catch (e) {
+            jsonResponse = null;
+          }
+          if (response.ok && jsonResponse && jsonResponse.success) {
             // Show Success Overlay Modal
             const successOverlay = document.getElementById('form-success-overlay');
             successOverlay.classList.remove('hidden');
@@ -1732,7 +1737,7 @@
             selectEl.classList.add('text-gray-400');
           } else {
             console.error(jsonResponse);
-            alert("Submission failed: " + (jsonResponse.message || "Please try again."));
+            alert("Submission failed: " + ((jsonResponse && jsonResponse.message) || "Please try again."));
           }
         })
         .catch(error => {
