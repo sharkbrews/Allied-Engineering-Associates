@@ -1261,8 +1261,8 @@
             <!-- Web3Forms Configuration -->
             <!-- REPLACE THE VALUE BELOW WITH YOUR FREE ACCESS KEY FROM https://web3forms.com/ -->
             <input type="hidden" name="access_key" value="cfb059a0-4a19-4dc3-9153-863361c863d6">
-            <input type="hidden" name="from_name" value="Allied Engineering Associates Website">
-            <input type="hidden" name="subject" value="New Technical Assistance Request">
+            <input type="hidden" name="from_name" value="Allied Engineering Website">
+            <input type="hidden" name="subject" value="New Inquiry">
             <!-- Spam Protection HoneyPot -->
             <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
 
@@ -1693,6 +1693,13 @@
         return;
       } else {
         phoneInput.setCustomValidity("");
+      }
+
+      // Dynamic subject formulation: "New Inquiry from [Name of the Sender]"
+      const nameInput = document.getElementById('form-name');
+      const subjectInput = form.querySelector('input[name="subject"]');
+      if (subjectInput && nameInput) {
+        subjectInput.value = `New Inquiry from ${nameInput.value}`;
       }
 
       // Show loading state
